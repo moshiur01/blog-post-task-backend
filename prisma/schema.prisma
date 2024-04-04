@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+
+  name String
+
+  email    String  @unique
+  password String?
+  role     String  @default("user")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  posts    Post[]
+  comments Comment[]
+
+  @@map("users")
+}
+
+model Category {
+  id String @id @default(uuid())
+
+  name String
+
+  img String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  posts Post[]
+
+  @@map("categories")
+}
+
+model Post {
+  id String @id @default(uuid())
+
+  title       String
+  description String
+  img         String @default("https://www.shutterstock.com/image-vector/ui-image-placeholder-wireframes-apps-260nw-1037719204.jpg")
+
+  //ref fields
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  //ref fields
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  comments Comment[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id String @id @default(uuid())
+
+  commentBody String @map("comment_body")
+
+  //ref fields
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("post_comments")
+}
