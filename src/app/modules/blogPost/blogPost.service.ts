@@ -107,7 +107,11 @@ const getSingleBlogPost = async (id: string): Promise<Post | null> => {
     include: {
       user: true,
       category: true,
-      comments: true,
+      comments: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
   return result;
